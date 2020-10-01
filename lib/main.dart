@@ -28,6 +28,7 @@ class _FormPageState extends State<FormPage> {
 
   String firstname;
   String lastname;
+  String nickname;
   int age;
 
   String selectedGender;
@@ -61,14 +62,41 @@ class _FormPageState extends State<FormPage> {
                 children: <Widget>[
                   Text('Firstname'),
                   TextFormField(
+                    validator: (value) {
+                      String message;
+                      if (value == null || value.isEmpty) {
+                        message = 'ต้องการข้อมูล';
+                      }
+                      return message;
+                    },
                     onSaved: (value) => setState(() {
                       firstname = value;
                     }),
                   ),
                   Text('Lastname'),
                   TextFormField(
+                    validator: (value) {
+                      String message;
+                      if (value == null || value.isEmpty) {
+                        message = 'ต้องการข้อมูล';
+                      }
+                      return message;
+                    },
                     onSaved: (value) => setState(() {
                       lastname = value;
+                    }),
+                  ),
+                  Text('nickname'),
+                  TextFormField(
+                    validator: (value) {
+                      String message;
+                      if (value == null || value.isEmpty) {
+                        message = 'ต้องการข้อมูล';
+                      }
+                      return message;
+                    },
+                    onSaved: (value) => setState(() {
+                      nickname = value;
                     }),
                   ),
 
@@ -86,14 +114,16 @@ class _FormPageState extends State<FormPage> {
                     children: <Widget>[
                       Text('Male'),
                       Radio(
-                          value: 'Male',
-                          groupValue: selectedGender,
-                          onChanged: (value) => _onRadioButtonChange(value)),
+                        value: 'Male',
+                        groupValue: selectedGender,
+                        onChanged: (value) => _onRadioButtonChange(value),
+                      ),
                       Text('Female'),
                       Radio(
-                          value: 'Female',
-                          groupValue: selectedGender,
-                          onChanged: (value) => _onRadioButtonChange(value)),
+                        value: 'Female',
+                        groupValue: selectedGender,
+                        onChanged: (value) => _onRadioButtonChange(value),
+                      ),
                     ],
                   ),
                   Text('Symtomps'),
@@ -153,6 +183,7 @@ class _FormPageState extends State<FormPage> {
                             builder: (context) => Page1(
                               firstname: firstname,
                               lastname: lastname,
+                              nickname: nickname,
                               age: age,
                               gender: selectedGender,
                               symtopms: selectedOptions,
@@ -174,21 +205,23 @@ class _FormPageState extends State<FormPage> {
 }
 
 class Page1 extends StatelessWidget {
-  Page1({
-    this.firstname,
-    this.lastname,
-    this.gender,
-    this.symtopms,
-    this.age,
-  });
-
   final String firstname;
   final String lastname;
+  final String nickname;
   final String gender;
   final int age;
   final List<String> symtopms;
 
   final String description = 'Hello World';
+
+  Page1({
+    this.firstname,
+    this.lastname,
+    this.nickname,
+    this.gender,
+    this.symtopms,
+    this.age,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +260,10 @@ class Page1 extends StatelessWidget {
         width: 300,
         height: 300,
         child: Center(
-          child: Text('คุณ $firstname $lastname, อายุ $age คุณเป็นโควิท'),
+          child: Text(
+            'คุณ $firstname $lastname ($nickname), อายุ $age\n คุณเป็นโควิท',
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     } else {
@@ -235,7 +271,10 @@ class Page1 extends StatelessWidget {
         width: 300,
         height: 300,
         child: Center(
-          child: Text('คุณ $firstname $lastname, อายุ $age คุณไม่เป็นโควิท'),
+          child: Text(
+            'คุณ $firstname $lastname ($nickname), อายุ $age\n คุณไม่เป็นโควิท',
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
@@ -245,7 +284,9 @@ class Page1 extends StatelessWidget {
 class Page2 extends StatelessWidget {
   final String description;
 
-  const Page2({Key key, this.description}) : super(key: key);
+  const Page2({
+    this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
