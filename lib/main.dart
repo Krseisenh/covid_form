@@ -25,10 +25,15 @@ class FormPage extends StatefulWidget {
 
 class _FormPageState extends State<FormPage> {
   final _formKey = GlobalKey<FormState>();
+  TextEditingController _conFirst = TextEditingController();
+  TextEditingController _conLast = TextEditingController();
+  TextEditingController _conNick = TextEditingController();
+  TextEditingController _conAge = TextEditingController();
 
   String firstname;
   String lastname;
   String nickname;
+  String gender;
   int age;
 
   String selectedGender;
@@ -36,6 +41,7 @@ class _FormPageState extends State<FormPage> {
   bool _isOption1 = false;
   bool _isOption2 = false;
   bool _isOption3 = false;
+  bool _isOption4 = false;
 
   List<String> selectedOptions = [];
 
@@ -49,7 +55,7 @@ class _FormPageState extends State<FormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Patient Form'),
+        title: Text('กรอกประวัติคนไข้'),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -60,8 +66,10 @@ class _FormPageState extends State<FormPage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
-                  Text('Firstname'),
+                  Text('ชื่อ'),
                   TextFormField(
+                    controller: _conFirst,
+                    keyboardType: TextInputType.name,
                     validator: (value) {
                       String message;
                       if (value == null || value.isEmpty) {
@@ -73,8 +81,10 @@ class _FormPageState extends State<FormPage> {
                       firstname = value;
                     }),
                   ),
-                  Text('Lastname'),
+                  Text('นามสกุล'),
                   TextFormField(
+                    controller: _conLast,
+                    keyboardType: TextInputType.name,
                     validator: (value) {
                       String message;
                       if (value == null || value.isEmpty) {
@@ -86,8 +96,10 @@ class _FormPageState extends State<FormPage> {
                       lastname = value;
                     }),
                   ),
-                  Text('nickname'),
+                  Text('ชื่อเล่น'),
                   TextFormField(
+                    controller: _conNick,
+                    keyboardType: TextInputType.name,
                     validator: (value) {
                       String message;
                       if (value == null || value.isEmpty) {
@@ -101,24 +113,25 @@ class _FormPageState extends State<FormPage> {
                   ),
 
                   /// fill age
-                  Text('Age'),
+                  Text('อายุ'),
                   TextFormField(
+                    controller: _conAge,
                     keyboardType: TextInputType.number,
                     onSaved: (value) => setState(() {
                       age = int.parse(value);
                     }),
                   ),
-                  Text('Gender'),
+                  Text('เพศ'),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('Male'),
+                      Text('ชาย'),
                       Radio(
                         value: 'Male',
                         groupValue: selectedGender,
                         onChanged: (value) => _onRadioButtonChange(value),
                       ),
-                      Text('Female'),
+                      Text('หญิง'),
                       Radio(
                         value: 'Female',
                         groupValue: selectedGender,
@@ -126,7 +139,7 @@ class _FormPageState extends State<FormPage> {
                       ),
                     ],
                   ),
-                  Text('Symtomps'),
+                  Text('อาการ'),
                   Column(
                     children: [
                       CheckboxListTile(
@@ -158,7 +171,7 @@ class _FormPageState extends State<FormPage> {
                         },
                       ),
                       CheckboxListTile(
-                        title: Text('มีไข้'),
+                        title: Text('ไข้'),
                         value: _isOption3,
                         onChanged: (val) {
                           setState(() {
@@ -171,12 +184,36 @@ class _FormPageState extends State<FormPage> {
                           });
                         },
                       ),
+                      CheckboxListTile(
+                        title: Text('เสมหะ'),
+                        value: _isOption4,
+                        onChanged: (val) {
+                          setState(() {
+                            _isOption4 = !_isOption4;
+                            if (_isOption4) {
+                              selectedOptions.add('เสมหะ');
+                            } else {
+                              selectedOptions.remove('เสมหะ');
+                            }
+                          });
+                        },
+                      ),
                     ],
                   ),
                   RaisedButton(
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         _formKey.currentState.save();
+                        gender = selectedGender;
+                        selectedGender = null;
+                        _conFirst.clear();
+                        _conLast.clear();
+                        _conNick.clear();
+                        _conAge.clear();
+                        _isOption1 = false;
+                        _isOption2 = false;
+                        _isOption3 = false;
+                        _isOption4 = false;
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -185,14 +222,14 @@ class _FormPageState extends State<FormPage> {
                               lastname: lastname,
                               nickname: nickname,
                               age: age,
-                              gender: selectedGender,
+                              gender: gender,
                               symtopms: selectedOptions,
                             ),
                           ),
                         );
                       }
                     },
-                    child: Text('Save'),
+                    child: Text('บันทึกข้อมูล'),
                   )
                 ],
               ),
@@ -227,84 +264,46 @@ class Page1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Report'),
+        title: Text('รายงาน'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.network(
-              'https://s3.xopic.de/openwho-public/channels/7fSc4JEBeO9H0P4b8d1Cfq/logo_v1.png',
+            Image.asset(
+              'assets/logo_v1.png',
+              width: 300,
+              height: 300,
             ),
             covidDetect(symtopms),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Page2(
-              description: description,
-            ),
-          ),
-        ),
+        onPressed: () => Navigator.pop(context),
         child: Text('ยืนยัน'),
       ),
     );
   }
 
   Widget covidDetect(List<String> symtopms) {
-    if (symtopms.length == 3) {
-      return Container(
-        width: 300,
-        height: 300,
-        child: Center(
-          child: Text(
-            'คุณ $firstname $lastname ($nickname), อายุ $age\n คุณเป็นโควิท',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    } else {
-      return Container(
-        width: 300,
-        height: 300,
-        child: Center(
-          child: Text(
-            'คุณ $firstname $lastname ($nickname), อายุ $age\n คุณไม่เป็นโควิท',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-  }
-}
-
-class Page2 extends StatelessWidget {
-  final String description;
-
-  const Page2({
-    this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Page2'),
-      ),
-      body: Center(
+    return Container(
+      width: 300,
+      height: 300,
+      child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              child: Text(description),
+          children: [
+            Text(
+              'คุณ $firstname $lastname ($nickname)',
+              textAlign: TextAlign.center,
             ),
-            RaisedButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Back'),
+            Text(
+              'อายุ $age',
+              textAlign: TextAlign.center,
             ),
+            Text(
+              symtopms.length >= 3 ? 'คุณเป็นโควิท' : 'คุณไม่เป็นโควิท',
+            )
           ],
         ),
       ),
