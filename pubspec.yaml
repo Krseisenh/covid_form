@@ -1,5 +1,5 @@
-name: fs_3
-description: A new Flutter project.
+name: covid_form
+description: covid patient form flutter.
 publish_to: "none"
 
 version: 1.0.0+1
@@ -10,11 +10,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.0
+  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_gherkin: ^2.0.0
+  path:
+  glob:
+
 
 flutter:
   uses-material-design: true

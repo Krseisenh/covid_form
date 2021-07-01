@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(CovidForm());
 }
 
-class MyApp extends StatelessWidget {
+class CovidForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,6 +54,7 @@ class _FormPageState extends State<FormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Key("form-page-tag"), // added key t
       appBar: AppBar(
         title: Text('กรอกประวัติคนไข้'),
       ),
@@ -66,8 +67,11 @@ class _FormPageState extends State<FormPage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
-                  Text('ชื่อ'),
                   TextFormField(
+                    key: Key("firstname-tag"),
+                    decoration: InputDecoration(
+                      labelText: 'ชื่อ',
+                    ),
                     controller: _conFirst,
                     keyboardType: TextInputType.name,
                     validator: (value) {
@@ -81,8 +85,11 @@ class _FormPageState extends State<FormPage> {
                       firstname = value;
                     }),
                   ),
-                  Text('นามสกุล'),
                   TextFormField(
+                    key: Key("lastname-tag"),
+                    decoration: InputDecoration(
+                      labelText: 'นามสกุล',
+                    ),
                     controller: _conLast,
                     keyboardType: TextInputType.name,
                     validator: (value) {
@@ -96,8 +103,11 @@ class _FormPageState extends State<FormPage> {
                       lastname = value;
                     }),
                   ),
-                  Text('ชื่อเล่น'),
                   TextFormField(
+                    key: Key("nickname-tag"),
+                    decoration: InputDecoration(
+                      labelText: 'ชื่อเล่น',
+                    ),
                     controller: _conNick,
                     keyboardType: TextInputType.name,
                     validator: (value) {
@@ -111,10 +121,11 @@ class _FormPageState extends State<FormPage> {
                       nickname = value;
                     }),
                   ),
-
-                  /// fill age
-                  Text('อายุ'),
                   TextFormField(
+                    key: Key("age-tag"),
+                    decoration: InputDecoration(
+                      labelText: 'อายุ',
+                    ),
                     controller: _conAge,
                     keyboardType: TextInputType.number,
                     onSaved: (value) => setState(() {
@@ -127,12 +138,14 @@ class _FormPageState extends State<FormPage> {
                     children: <Widget>[
                       Text('ชาย'),
                       Radio(
+                        key: Key('male-tag'),
                         value: 'Male',
                         groupValue: selectedGender,
                         onChanged: (value) => _onRadioButtonChange(value),
                       ),
                       Text('หญิง'),
                       Radio(
+                        key: Key('female-tag'),
                         value: 'Female',
                         groupValue: selectedGender,
                         onChanged: (value) => _onRadioButtonChange(value),
@@ -143,6 +156,7 @@ class _FormPageState extends State<FormPage> {
                   Column(
                     children: [
                       CheckboxListTile(
+                        key: Key('syntom-one-tag'),
                         title: Text('ไอ'),
                         value: _isOption1,
                         onChanged: (val) {
@@ -157,6 +171,7 @@ class _FormPageState extends State<FormPage> {
                         },
                       ),
                       CheckboxListTile(
+                        key: Key('syntom-two-tag'),
                         title: Text('เจ็บคอ'),
                         value: _isOption2,
                         onChanged: (val) {
@@ -171,6 +186,7 @@ class _FormPageState extends State<FormPage> {
                         },
                       ),
                       CheckboxListTile(
+                        key: Key('syntom-three-tag'),
                         title: Text('ไข้'),
                         value: _isOption3,
                         onChanged: (val) {
@@ -185,6 +201,7 @@ class _FormPageState extends State<FormPage> {
                         },
                       ),
                       CheckboxListTile(
+                        key: Key('syntom-four-tag'),
                         title: Text('เสมหะ'),
                         value: _isOption4,
                         onChanged: (val) {
@@ -201,6 +218,7 @@ class _FormPageState extends State<FormPage> {
                     ],
                   ),
                   RaisedButton(
+                    key: Key('save-button-tag'),
                     onPressed: () {
                       if (_formKey.currentState.validate()) {
                         _formKey.currentState.save();
@@ -217,7 +235,7 @@ class _FormPageState extends State<FormPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Page1(
+                            builder: (context) => ReportPage(
                               firstname: firstname,
                               lastname: lastname,
                               nickname: nickname,
@@ -241,7 +259,7 @@ class _FormPageState extends State<FormPage> {
   }
 }
 
-class Page1 extends StatelessWidget {
+class ReportPage extends StatelessWidget {
   final String firstname;
   final String lastname;
   final String nickname;
@@ -249,9 +267,7 @@ class Page1 extends StatelessWidget {
   final int age;
   final List<String> symtopms;
 
-  final String description = 'Hello World';
-
-  Page1({
+  ReportPage({
     this.firstname,
     this.lastname,
     this.nickname,
@@ -263,6 +279,7 @@ class Page1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Key("report-page-tag"),
       appBar: AppBar(
         title: Text('รายงาน'),
       ),
@@ -272,6 +289,7 @@ class Page1 extends StatelessWidget {
           children: <Widget>[
             Image.asset(
               'assets/logo_v1.png',
+              key: Key('covid-image-tag'),
               width: 300,
               height: 300,
             ),
@@ -280,6 +298,7 @@ class Page1 extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        key: Key('confirm-button-tag'),
         onPressed: () => Navigator.pop(context),
         child: Text('ยืนยัน'),
       ),
@@ -295,14 +314,17 @@ class Page1 extends StatelessWidget {
           children: [
             Text(
               'คุณ $firstname $lastname ($nickname)',
+              key: Key('report-fullname-tag'),
               textAlign: TextAlign.center,
             ),
             Text(
               'อายุ $age',
+              key: Key('report-age-tag'),
               textAlign: TextAlign.center,
             ),
             Text(
               symtopms.length >= 3 ? 'คุณเป็นโควิท' : 'คุณไม่เป็นโควิท',
+              key: Key('covid-confirm-tag'),
             )
           ],
         ),
