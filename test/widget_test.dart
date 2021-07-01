@@ -16,5 +16,9 @@ void main() {
     await tester.pumpWidget(CovidForm());
 
     expect(find.byKey(Key('form-page-tag')), findsOneWidget);
+    expect(find.byKey(Key('firstname-tag')), findsOneWidget);
+    expect(find.byKey(Key('lastname-tag')), findsOneWidget);
+    expect(find.byKey(Key('nickname-tag')), findsOneWidget);
+    expect(find.byKey(Key('age-tag')), findsOneWidget);
   });
 }
