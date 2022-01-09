@@ -1,16 +1,12 @@
 import 'package:flutter_driver/src/driver/driver.dart';
 
-Future<bool> isAppeared(
-  FlutterDriver driver,
-  dynamic tag, {
-  Duration timeout = const Duration(milliseconds: 3000),
-}) async {
+Future<void> isAppeared(FlutterDriver driver, dynamic tag,
+    [bool appeared = true]) async {
   final finder = createFinderByTag(tag);
-  try {
-    await driver.waitFor(finder, timeout: timeout);
-    return true;
-  } catch (exception) {
-    return false;
+  if (appeared) {
+    await driver.waitFor(finder);
+  } else {
+    await driver.waitForAbsent(finder);
   }
 }
 
