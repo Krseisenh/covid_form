@@ -40,7 +40,7 @@ class ApplicationCubit extends Cubit<ApplicationState> {
 
   Future submit() async {
     emit(state.copyWith(toggleLoading: true));
-    await Future.delayed(Duration(seconds: 10)).then((value) {
+    await Future.delayed(Duration(seconds: 1)).then((value) {
       emit(state.copyWith(toggleLoading: false));
     });
   }

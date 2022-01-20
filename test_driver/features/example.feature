@@ -12,11 +12,11 @@ Feature: Fill empty mandatory information
         Then I tap the "male-tag" button
         Then I chill out for a bit
         Then I tap the "female-tag" button
-        # Then I tap the "syntom-one-tag" button
-        # Then I tap the "syntom-two-tag" button
+        Then I tap the "syntom-one-tag" button
+        Then I tap the "syntom-two-tag" button
 
-        # When I scroll down until find "syntom-three-tag"
-        # Then I tap the "syntom-three-tag" button
+        When I scroll down until find "syntom-three-tag"
+        Then I tap the "syntom-three-tag" button
         Then I tap the "save-form" button
         Then I chill out for a bit
 

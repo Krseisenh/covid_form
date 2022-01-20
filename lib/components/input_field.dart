@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 class InputField extends StatelessWidget {
   final String? labelText;
-  final TextEditingController controller;
+  final String? value;
   final TextInputType? inputType;
   final void Function(String?)? onChanged;
 
   const InputField({
     Key? key,
     this.labelText,
-    required this.controller,
+    this.value,
     this.inputType,
     this.onChanged,
   }) : super(key: key);
@@ -23,7 +23,7 @@ class InputField extends StatelessWidget {
         decoration: InputDecoration(
           labelText: labelText ?? 'label',
         ),
-        controller: controller,
+        initialValue: value,
         keyboardType: inputType ?? TextInputType.name,
         validator: (String? value) {
           String? message;
