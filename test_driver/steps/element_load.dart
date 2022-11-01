@@ -10,7 +10,7 @@ class ElementLoaded extends Given1WithWorld<String, FlutterWorld> {
 
   @override
   Future<void> executeStep(String tag) async {
-    await isAppeared(world.driver, tag);
+    await isAppeared(world.driver!, tag);
   }
 
   @override
