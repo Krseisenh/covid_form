@@ -1,6 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:covid_form/firebase_options.dart';
+import 'package:covid_form/report.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const CovidForm());
 }
 
@@ -225,24 +235,47 @@ class _FormPageState extends State<FormPage> {
                 ),
                 ElevatedButton(
                   key: Key('save-button-tag'),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
-                      gender = selectedGender;
-                      selectedGender = null;
-                      _conFirst.clear();
-                      _conLast.clear();
-                      _conNick.clear();
-                      _conAge.clear();
-                      _isOption1 = false;
-                      _isOption2 = false;
-                      _isOption3 = false;
-                      _isOption4 = false;
-                      Navigator.pushNamed(
-                        context,
-                        '',
-                        arguments: {},
-                      );
+
+                      await FirebaseFirestore.instance
+                          .collection('reports')
+                          .add(
+                            Report(
+                              firstname: firstname,
+                              lastname: lastname,
+                              nickname: nickname,
+                              age: age,
+                              gender: selectedGender,
+                              syntoms: selectedOptions,
+                            ).toJson(),
+                          )
+                          .then((report) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ReportPage(),
+                            settings: RouteSettings(arguments: {
+                              "id": report.id,
+                            }),
+                          ),
+                        );
+                      }).whenComplete(() {
+                        selectedGender = null;
+                        _conFirst.clear();
+                        _conLast.clear();
+                        _conNick.clear();
+                        _conAge.clear();
+                        _isOption1 = false;
+                        _isOption2 = false;
+                        _isOption3 = false;
+                        _isOption4 = false;
+
+                        selectedOptions.clear();
+
+                        setState(() {});
+                      });
                     }
                   },
                   child: Text('บันทึกข้อมูล'),
@@ -257,24 +290,12 @@ class _FormPageState extends State<FormPage> {
 }
 
 class ReportPage extends StatelessWidget {
-  final String? firstname;
-  final String? lastname;
-  final String? nickname;
-  final String? gender;
-  final int? age;
-  final List<String>? symtopms;
-
-  ReportPage({
-    this.firstname,
-    this.lastname,
-    this.nickname,
-    this.gender,
-    this.symtopms,
-    this.age,
-  });
+  const ReportPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final data =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     return Scaffold(
       key: Key("report-page-tag"),
       appBar: AppBar(
@@ -290,20 +311,69 @@ class ReportPage extends StatelessWidget {
               width: 300,
               height: 300,
             ),
-            covidDetect(symtopms!),
+            FutureBuilder(
+              future: FirebaseFirestore.instance
+                  .collection('reports')
+                  .doc(data!['id'])
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                }
+
+                if (snapshot.hasError) {
+                  return Placeholder();
+                }
+
+                DocumentSnapshot? doc = snapshot.data as DocumentSnapshot?;
+                print("=========> ${doc?.data()}");
+                Report report =
+                    Report.fromJson(doc?.data() as Map<String, dynamic>);
+                return covidDetect(
+                  firstname: report.firstname,
+                  lastname: report.lastname,
+                  nickname: report.nickname,
+                  age: report.age,
+                  symtopms: report.syntoms,
+                );
+              },
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         key: Key('confirm-button-tag'),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () async => await FirebaseFirestore.instance.collection('reports').doc(data['id'])
+        // .delete()
+        .update({
+          "updated_at": Timestamp.now(),
+        }).whenComplete(() {
+          
+        }),
         child: Text('ยืนยัน'),
       ),
     );
   }
 
-  Widget covidDetect(List<String> symtopms) {
-    return Container(
+  List<Widget> getSymtomList({List? symtopms}) {
+    List<Widget> _list = [];
+
+    for (var symtom in symtopms ?? []) {
+      _list.add(Text(symtom));
+    }
+
+    return _list;
+  }
+
+  Widget covidDetect({
+    String? firstname,
+    String? lastname,
+    String? nickname,
+    int? age,
+    String? gender,
+    List? symtopms = const [],
+  }) {
+    return SizedBox(
       width: 300,
       height: 300,
       child: Center(
@@ -319,10 +389,12 @@ class ReportPage extends StatelessWidget {
               key: Key('report-age-tag'),
               textAlign: TextAlign.center,
             ),
-            Text(
-              symtopms.length >= 3 ? 'คุณเป็นโควิท' : 'คุณไม่เป็นโควิท',
-              key: Key('covid-confirm-tag'),
-            )
+            Expanded(
+              flex: 2,
+              child: Column(
+                children: getSymtomList(symtopms: symtopms),
+              ),
+            ),
           ],
         ),
       ),

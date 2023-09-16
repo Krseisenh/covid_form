@@ -1,4 +1,4 @@
-package com.example.fs_3
+package com.example.covid_form
 
 import io.flutter.embedding.android.FlutterActivity
 
